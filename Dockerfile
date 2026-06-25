@@ -23,9 +23,10 @@ ENV PORT=8080
 ENV COBROWSE_HTTPS_PORT=9443
 
 # Server deps. tsx runs the TS entry at runtime, so it's required even in prod —
-# install the full dependency set (tsx lives in devDependencies).
+# install the full set INCLUDING devDependencies. (NODE_ENV=production makes `npm ci`
+# skip dev deps by default, so force --include=dev or tsx is missing at runtime.)
 COPY server/package*.json ./server/
-RUN npm --prefix server ci
+RUN npm --prefix server ci --include=dev
 COPY server ./server
 # Built client from stage 1 (the server serves ../client/dist relative to itself)
 COPY --from=build /app/client/dist ./client/dist
