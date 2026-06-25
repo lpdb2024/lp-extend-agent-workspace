@@ -1,0 +1,11 @@
+# Files NOT uploaded to Cloud Build (keeps the build context small + secrets out).
+.git
+.gitignore
+**/node_modules
+client/dist
+server/.cert
+server/.env
+**/.env
+*.log
+development/
+# keep: Dockerfile, client/, server/, demo/, README.md
