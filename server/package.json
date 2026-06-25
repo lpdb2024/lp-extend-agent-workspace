@@ -1,0 +1,31 @@
+{
+  "name": "agent-chat-widget-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node kill-port.js && tsx watch src/index.ts",
+    "start": "cross-env PORT=9400 node kill-port.js && cross-env PORT=9400 tsx src/index.ts",
+    "start:cloud": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "lp-messaging-sdk": "^1.20.2",
+    "multer": "^1.4.5-lts.1",
+    "selfsigned": "^5.5.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.0",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

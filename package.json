@@ -1,0 +1,20 @@
+{
+  "name": "agent-chat-widget",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone agent workspace POC on the official LivePerson Messaging Platform SDK",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "predev:server": "node server/kill-port.js",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "docker:build": "docker build -t agent-chat-widget .",
+    "docker:run": "docker run --env-file server/.env -p 9400:9400 -p 9443:9443 agent-chat-widget"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SDE Test Page</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; background: #0f1117; color: #ccc; }
+    h1 { color: #fff; font-size: 18px; margin-bottom: 6px; }
+    p { font-size: 13px; color: #888; margin: 0 0 20px; }
+    .sde-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button {
+      background: #1e2130; border: 1px solid #333; color: #ccc; padding: 10px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 12px; text-align: left; transition: border-color 0.15s;
+    }
+    button:hover { border-color: #7c5cfc; color: #fff; }
+    button.fired { border-color: #22c55e; color: #22c55e; }
+    .log { margin-top: 20px; background: #1e2130; border: 1px solid #333; border-radius: 8px; padding: 12px; font-size: 11px; font-family: monospace; max-height: 200px; overflow-y: auto; color: #888; }
+    .log-entry { margin: 2px 0; }
+    .log-entry.ok { color: #22c55e; }
+    .log-entry.err { color: #ef4444; }
+  </style>
+</head>
+<body>
+
+<!-- BEGIN LivePerson Monitor. -->
+<script type="text/javascript">window.lpTag=window.lpTag||{},'undefined'==typeof window.lpTag._tagCount?(window.lpTag={wl:lpTag.wl||null,scp:lpTag.scp||null,site:'31487986'||'',section:lpTag.section||'',tagletSection:lpTag.tagletSection||null,autoStart:lpTag.autoStart!==!1,ovr:lpTag.ovr||{},_v:'1.10.0',_tagCount:1,protocol:'https:',events:{bind:function(t,e,i){lpTag.defer(function(){lpTag.events.bind(t,e,i)},0)},trigger:function(t,e,i){lpTag.defer(function(){lpTag.events.trigger(t,e,i)},1)}},defer:function(t,e){0===e?(this._defB=this._defB||[],this._defB.push(t)):1===e?(this._defT=this._defT||[],this._defT.push(t)):(this._defL=this._defL||[],this._defL.push(t))},load:function(t,e,i){var n=this;setTimeout(function(){n._load(t,e,i)},0)},_load:function(t,e,i){var n=t;t||(n=this.protocol+'//'+(this.ovr&&this.ovr.domain?this.ovr.domain:'lptag.liveperson.net')+'/tag/tag.js?site='+this.site);var o=document.createElement('script');o.setAttribute('charset',e?e:'UTF-8'),i&&o.setAttribute('id',i),o.setAttribute('src',n),document.getElementsByTagName('head').item(0).appendChild(o)},init:function(){this._timing=this._timing||{},this._timing.start=(new Date).getTime();var t=this;window.attachEvent?window.attachEvent('onload',function(){t._domReady('domReady')}):(window.addEventListener('DOMContentLoaded',function(){t._domReady('contReady')},!1),window.addEventListener('load',function(){t._domReady('domReady')},!1)),'undefined'===typeof window._lptStop&&this.load()},start:function(){this.autoStart=!0},_domReady:function(t){this.isDom||(this.isDom=!0,this.events.trigger('LPT','DOM_READY',{t:t})),this._timing[t]=(new Date).getTime()},vars:lpTag.vars||[],dbs:lpTag.dbs||[],ctn:lpTag.ctn||[],sdes:lpTag.sdes||[],hooks:lpTag.hooks||[],identities:lpTag.identities||[],ev:lpTag.ev||[]},lpTag.init()):window.lpTag._tagCount+=1;</script>
+<!-- END LivePerson Monitor. -->
+
+<h1>SDE Test Page</h1>
+<p>Fire SDEs then start a chat. Check the MI API response to see field shapes.</p>
+
+<div class="sde-grid">
+  <button onclick="fireCart(this)">🛒 Cart Update</button>
+  <button onclick="firePurchase(this)">💳 Purchase / Transaction</button>
+  <button onclick="fireProdView(this)">👁 Viewed Product</button>
+  <button onclick="fireCtmrInfo(this)">👤 Customer Info (ctmrinfo)</button>
+  <button onclick="fireMrktInfo(this)">📣 Marketing Source</button>
+  <button onclick="firePersonal(this)">🪪 Personal Info</button>
+  <button onclick="fireLead(this)">🎯 Lead</button>
+  <button onclick="fireService(this)">🔧 Service Activity</button>
+  <button onclick="fireError(this)">⚠️ Visitor Error</button>
+  <button onclick="fireSearch(this)">🔍 Searched Content</button>
+  <button onclick="fireSection(this)">📄 Section</button>
+  <button onclick="fireAll(this)">⚡ Fire All</button>
+</div>
+
+<div class="log" id="log"><div class="log-entry">Ready — fire SDEs then start a chat.</div></div>
+
+<script>
+function log(msg, ok) {
+  const el = document.getElementById('log');
+  const d = document.createElement('div');
+  d.className = 'log-entry' + (ok === false ? ' err' : ok ? ' ok' : '');
+  d.textContent = new Date().toLocaleTimeString() + ' ' + msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function push(sde, btn) {
+  try {
+    window.lpTag.sdes.push(sde);
+    log('✓ ' + sde.type, true);
+    if (btn) btn.classList.add('fired');
+  } catch(e) { log('✗ ' + sde.type + ': ' + e.message, false); }
+}
+
+function fireCart(btn) {
+  push({ type:'cart', total:149.99, currency:'USD', numItems:3, products:[
+    { product:{ name:'Wireless Headphones', category:'Electronics', sku:'WH-001', price:79.99 }, quantity:1 },
+    { product:{ name:'Phone Case', category:'Accessories', sku:'PC-042', price:19.99 }, quantity:2 }
+  ]}, btn);
+}
+
+function firePurchase(btn) {
+  push({ type:'purchase', total:229.98, currency:'USD', orderId:'ORD-20240625-001',
+    cart:{ products:[
+      { product:{ name:'Running Shoes', category:'Footwear', sku:'RS-XL-9', price:114.99 }, quantity:2 }
+    ]}
+  }, btn);
+}
+
+function fireProdView(btn) {
+  push({ type:'prodView', currency:'USD', products:[
+    { product:{ name:'4K Smart TV 55"', category:'Electronics', sku:'TV-55-4K', price:899.00 } },
+    { product:{ name:'HDMI Cable 2m', category:'Accessories', sku:'HDMI-2M', price:12.99 } }
+  ]}, btn);
+}
+
+function fireCtmrInfo(btn) {
+  push({ type:'ctmrinfo', info:{
+    cstatus:'active', ctype:'premium', customerId:'CUST-7742-XB',
+    balance:1250.00, currency:'AUD', socialId:'fb:10234567890',
+    userName:'jsmith92', companySize:50, companyBranch:'Sydney CBD',
+    accountName:'Smith Enterprises', role:'owner',
+    lastPaymentDate:{ day:15, month:6, year:2025 },
+    registrationDate:{ day:3, month:1, year:2022 },
+    storeNumber:'SYD-001', storeZipCode:'2000'
+  }}, btn);
+}
+
+function fireMrktInfo(btn) {
+  push({ type:'mrktInfo', info:{
+    channel:'1', affiliate:'Google', campaignId:'AU-summer-2025'
+  }}, btn);
+}
+
+function firePersonal(btn) {
+  push({ type:'personal', personal:{
+    firstname:'Jane', lastname:'Smith',
+    age:{ age:34, year:1990, month:8, day:12 },
+    contacts:[{ email:'jane.smith@example.com', phone:'+61 2 9876 5432', preferred:'EMAIL',
+      address:{ country:'Australia', region:'New South Wales', zipcode:'2000' }
+    }],
+    gender:'FEMALE', language:'en-AU', company:'Smith Enterprises'
+  }}, btn);
+}
+
+function fireLead(btn) {
+  push({ type:'lead', lead:{
+    topic:'Premium plan upgrade', value:1200.00, currency:'AUD', leadId:'LEAD-20240625-88'
+  }}, btn);
+}
+
+function fireService(btn) {
+  push({ type:'service', service:{
+    topic:'Policy renewal inquiry', status:1,
+    category:'insurance', serviceId:'SVC-POL-99234'
+  }}, btn);
+}
+
+function fireError(btn) {
+  push({ type:'error', error:{
+    message:'Payment gateway timeout', code:'ERR-GW-408'
+  }}, btn);
+}
+
+function fireSearch(btn) {
+  push({ type:'searchInfo', keywords:['health insurance compare','family cover','gap cover'] }, btn);
+}
+
+function fireSection(btn) {
+  window.lpTag.section = ['insurance','health-cover','compare'];
+  log('✓ section', true);
+  if (btn) btn.classList.add('fired');
+}
+
+function fireAll(btn) {
+  fireCart(); firePurchase(); fireProdView(); fireCtmrInfo();
+  fireMrktInfo(); firePersonal(); fireLead(); fireService();
+  fireError(); fireSearch(); fireSection();
+  if (btn) btn.classList.add('fired');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Chat Widget — embed sample &amp; guide</title>
+    <style>
+      :root {
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --ink: #0f172a;
+        --sub: #64748b;
+        --line: #e2e8f0;
+        --bg: #e8eaf2;
+        --panel: #ffffff;
+        --accent: #7c3aed;
+        --accent2: #c026d3;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { min-height: 100vh; color: var(--ink); }
+
+      /* ── Blueprint background — ported from the web app (BlueprintBackground.vue),
+            light-mode palette: gradient + grid + schematic lines/nodes + tech labels. */
+      .bp {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        background: #e8eaf2;
+      }
+      .bp__gradient {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse at 20% 80%, rgba(124, 58, 237, 0.07) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 20%, rgba(192, 38, 211, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+          linear-gradient(180deg, #dfe1ee 0%, #e8eaf2 30%, #e8eaf2 70%, #e2e4f0 100%);
+      }
+      .bp__grid { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .bp__grid-small { stroke: rgba(100, 80, 160, 0.035); }
+      .bp__grid-large { stroke: rgba(100, 80, 160, 0.06); }
+      .bp__schematic { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .bp__line--accent    { stroke: rgba(124, 58, 237, 0.18); }
+      .bp__line--secondary { stroke: rgba(192, 38, 211, 0.14); }
+      .bp__node--accent    { fill: rgba(124, 58, 237, 0.35); }
+      .bp__node--secondary { fill: rgba(192, 38, 211, 0.28); }
+      .bp__label {
+        position: absolute; font-family: 'Fira Code', Monaco, monospace;
+        font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+        color: rgba(100, 80, 160, 0.28); white-space: nowrap;
+      }
+      .bp__label--dim { color: rgba(124, 58, 237, 0.2); font-size: 8px; }
+
+      /* Two-column layout: 540px widget column on the left, content panel on the right. */
+      .layout {
+        position: relative; z-index: 1;
+        display: grid;
+        grid-template-columns: 540px 1fr;
+        min-height: 100vh;
+      }
+      /* Left: widget column */
+      .widget-col {
+        display: flex; align-items: center; justify-content: center;
+        padding: 40px;
+      }
+      .widget-col iframe {
+        width: 400px; height: 700px; border: 0; border-radius: 20px;
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.30), 0 0 0 1px rgba(15, 23, 42, 0.05);
+        background: #fff;
+      }
+      /* Right: opaque white content panel */
+      .content {
+        background: #ffffff;
+        border-left: 1px solid var(--line);
+        box-shadow: -20px 0 60px rgba(15, 23, 42, 0.06);
+        overflow-y: auto;
+        max-height: 100vh;
+      }
+      .wrap { padding: 48px 56px 64px; max-width: 720px; }
+
+      @media (max-width: 1080px) {
+        .layout { grid-template-columns: 1fr; }
+        .widget-col { padding: 28px; }
+        .content { max-height: none; border-left: 0; border-top: 1px solid var(--line); }
+      }
+
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--accent); background: rgba(124, 58, 237, 0.1);
+        padding: 5px 11px; border-radius: 999px;
+      }
+      h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 16px 0 6px; }
+      .lede { font-size: 15px; color: var(--sub); line-height: 1.6; margin: 0 0 28px; max-width: 560px; }
+
+      .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+        padding: 20px 22px; margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      }
+      .card h2 {
+        font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--sub); margin: 0 0 12px;
+      }
+      ol.steps { margin: 0; padding-left: 0; counter-reset: step; list-style: none; }
+      ol.steps li {
+        position: relative; padding: 0 0 14px 38px; counter-increment: step;
+        font-size: 14px; line-height: 1.55;
+      }
+      ol.steps li:last-child { padding-bottom: 0; }
+      ol.steps li::before {
+        content: counter(step); position: absolute; left: 0; top: -1px;
+        width: 26px; height: 26px; border-radius: 50%;
+        display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+      }
+      pre {
+        margin: 10px 0 0; padding: 14px 16px; border-radius: 10px; overflow-x: auto;
+        background: #0b1020; color: #c7d2fe; font-size: 12.5px; line-height: 1.55;
+      }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .inline-code {
+        background: #eef0f6; border: 1px solid var(--line); border-radius: 5px;
+        padding: 1px 6px; font-size: 12.5px; color: #3730a3;
+      }
+
+      .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .feat { grid-template-columns: 1fr; } }
+      .feat__item { display: flex; gap: 11px; align-items: flex-start; }
+      .feat__ic {
+        flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+        display: grid; place-items: center; font-size: 15px;
+        background: rgba(124, 58, 237, 0.1);
+      }
+      .feat__t { font-size: 13.5px; font-weight: 600; }
+      .feat__d { font-size: 12.5px; color: var(--sub); line-height: 1.45; }
+
+      .guide li { font-size: 13.5px; line-height: 1.7; color: #334155; }
+      .guide b { color: var(--ink); }
+
+      .note {
+        font-size: 12.5px; color: var(--sub); line-height: 1.55;
+        border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; margin-top: 8px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- ── Blueprint background (grid + schematic lines + tech labels) ── -->
+    <div class="bp" aria-hidden="true">
+      <div class="bp__gradient"></div>
+      <svg class="bp__grid" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="bpSmall" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" class="bp__grid-small" stroke-width="0.5" />
+          </pattern>
+          <pattern id="bpLarge" width="200" height="200" patternUnits="userSpaceOnUse">
+            <rect width="200" height="200" fill="url(#bpSmall)" />
+            <path d="M 200 0 L 0 0 0 200" fill="none" class="bp__grid-large" stroke-width="1" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#bpLarge)" />
+      </svg>
+      <svg class="bp__schematic" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <line x1="75%" y1="8%" x2="100%" y2="8%" class="bp__line--accent" stroke-width="1" />
+        <line x1="85%" y1="8%" x2="82%" y2="12%" class="bp__line--accent" stroke-width="1" />
+        <line x1="82%" y1="12%" x2="95%" y2="12%" class="bp__line--accent" stroke-width="1" />
+        <line x1="0" y1="25%" x2="8%" y2="25%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="5%" y1="25%" x2="8%" y2="20%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="0" y1="85%" x2="15%" y2="85%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="10%" y1="85%" x2="12%" y2="90%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="12%" y1="90%" x2="20%" y2="90%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="90%" y1="70%" x2="100%" y2="70%" class="bp__line--accent" stroke-width="1" />
+        <line x1="92%" y1="70%" x2="90%" y2="75%" class="bp__line--accent" stroke-width="1" />
+        <circle cx="82%" cy="12%" r="3" class="bp__node--accent" />
+        <circle cx="8%" cy="20%" r="3" class="bp__node--secondary" />
+        <circle cx="12%" cy="90%" r="3" class="bp__node--secondary" />
+        <circle cx="90%" cy="75%" r="3" class="bp__node--accent" />
+      </svg>
+      <div>
+        <span class="bp__label" style="top:5%;right:5%">SYS.EXTEND.v2.4</span>
+        <span class="bp__label" style="top:22%;left:3%">NODE.ACTIVE</span>
+        <span class="bp__label" style="bottom:12%;right:8%">CONN.SECURE</span>
+        <span class="bp__label" style="bottom:5%;left:5%">LP.PLATFORM.HUB</span>
+        <span class="bp__label bp__label--dim" style="top:40%;right:2%">0x7F3A</span>
+        <span class="bp__label bp__label--dim" style="bottom:35%;left:2%">0xE849</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- ── Left: the live embedded widget (540px column) ── -->
+      <div class="widget-col">
+        <iframe src="/widget" allow="camera; microphone; clipboard-write"></iframe>
+      </div>
+
+      <!-- ── Right: opaque white content panel ── -->
+      <div class="content">
+        <div class="wrap">
+          <span class="eyebrow">● Live sample</span>
+          <h1>Agent Chat Widget</h1>
+          <p class="lede">
+            A compact, embeddable LivePerson agent console — drop it into any CRM or internal
+            tool with a single <span class="inline-code">&lt;iframe&gt;</span>. The live widget
+            is on the left. Everything here shows how to add it and what it does.
+          </p>
+
+      <!-- Install -->
+      <div class="card">
+        <h2>Install</h2>
+        <ol class="steps">
+          <li>
+            Deploy the backend (this codebase) — it serves both the widget UI and the
+            <span class="inline-code">/api</span> routes from one origin.
+          </li>
+          <li>
+            Add the iframe to your page, pointing <span class="inline-code">src</span> at that
+            backend's <span class="inline-code">/widget</span> route:
+            <pre><code>&lt;iframe
+  src="https://YOUR-BACKEND/widget"
+  width="400" height="700"
+  allow="camera; microphone; clipboard-write"
+  style="border:0; border-radius:20px"&gt;
+&lt;/iframe&gt;</code></pre>
+          </li>
+          <li>
+            For SSO, register <span class="inline-code">&lt;origin&gt;/widget/callback</span> in
+            your LivePerson OAuth app. Password sign-in needs no setup.
+          </li>
+        </ol>
+        <p class="note">
+          <code>camera; microphone</code> enable the video &amp; voice call features. SSO opens
+          a brief popup (LP's login can't be framed); password login works in-frame.
+        </p>
+      </div>
+
+      <!-- Features -->
+      <div class="card">
+        <h2>Features</h2>
+        <div class="feat">
+          <div class="feat__item">
+            <div class="feat__ic">💬</div>
+            <div><div class="feat__t">Live conversations</div><div class="feat__d">Real-time thread, SLA countdowns, status filters, transcript search.</div></div>
+          </div>
+          <div class="feat__item">
+            <div class="feat__ic">✍️</div>
+            <div><div class="feat__t">Smart composer</div><div class="feat__d">Send, file share, AI rewrite &amp; translate, canned-response hotkeys.</div></div>
+          </div>
+          <div class="feat__item">
+            <div class="feat__ic">👤</div>
+            <div><div class="feat__t">Customer context</div><div class="feat__d">SDEs, customer info, page-view history, agent notes.</div></div>
+          </div>
+          <div class="feat__item">
+            <div class="feat__ic">🔒</div>
+            <div><div class="feat__t">Secure forms</div><div class="feat__d">Send PCI forms and read back the masked submission.</div></div>
+          </div>
+          <div class="feat__item">
+            <div class="feat__ic">🖥️</div>
+            <div><div class="feat__t">Cobrowse &amp; calls</div><div class="feat__d">Cobrowse, video and voice — the live screen renders in-panel.</div></div>
+          </div>
+          <div class="feat__item">
+            <div class="feat__ic">🔀</div>
+            <div><div class="feat__t">Routing actions</div><div class="feat__d">Transfer to skill/agent/manager, back-to-queue, private message, end.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User guide -->
+      <div class="card">
+        <h2>User guide</h2>
+        <ul class="guide">
+          <li><b>Sign in</b> — pick SSO (popup) or Password, enter your LP Account ID.</li>
+          <li><b>Switch conversations</b> — click the chat icon in the rail, or any avatar below it. Hover an avatar to preview the last messages.</li>
+          <li><b>Reply</b> — type in the composer. <b>Enter</b> sends; <b>Shift+Enter</b> for a new line. Attach files with the paperclip; use the sparkle menu for AI rewrite/translate.</li>
+          <li><b>Canned responses</b> — type a hotkey prefix then press <b>→</b> to pick by suffix, or open the Canned tab in the panel.</li>
+          <li><b>Details panel</b> — the person icon (top right) slides out Customer / Notes / Canned / Forms / Pages / Live.</li>
+          <li><b>Conversation actions</b> — the ⋮ menu (top right): cobrowse, video, voice, send secure form, transfer, private message, back-to-queue, end.</li>
+          <li><b>Availability</b> — your avatar (bottom of the rail): set Online / Away / Back soon, view skills, send all back to queue, switch theme, sign out.</li>
+        </ul>
+      </div>
+        </div>
+        <!-- /.wrap -->
+      </div>
+      <!-- /.content -->
+    </div>
+    <!-- /.layout -->
+  </body>
+</html>

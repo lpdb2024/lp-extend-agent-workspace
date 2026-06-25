@@ -1,0 +1,151 @@
+@import 'tailwindcss';
+
+/* ── Dark mode (default) ──────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+  --bg:          #1a1535;
+  --bg1:         #211944;
+  --bg2:         #160f30;
+  --bg3:         #2a2052;
+  --border:      rgba(180,140,255,0.13);
+  --border2:     rgba(180,140,255,0.07);
+  --text:        #ede8f8;
+  --text2:       #9e8ec8;
+  --text3:       #5a4e7a;
+  --acc:         #a855f7;
+  --acc2:        #c026d3;
+  --acc-grad:    linear-gradient(135deg, #8b5cf6, #d946ef);
+  --acc-tint:    rgba(168,85,247,0.15);
+  --acc-border:  rgba(168,85,247,0.32);
+  --shadow:      0 1px 8px rgba(0,0,0,0.5);
+  --bg-glow:     #130f28;
+  /* Surfaces — deep navy base */
+  --surf-rail:   rgba(18,14,38,0.96);
+  --surf-panel:  rgba(22,17,48,0.72);
+  --surf-thread: rgba(26,21,53,0.30);
+  --surf-header: rgba(20,16,42,0.88);
+  --surf-comp:   rgba(20,16,42,0.92);
+  --surf-input:  rgba(14,10,30,0.60);
+  --blur-sm:     blur(12px);
+  --blur-md:     blur(20px);
+  /* Button group — dark navy trough */
+  --grp-bg:         rgba(12,8,28,0.55);
+  --grp-border:     rgba(0,0,0,0.45);
+  --grp-shadow:     inset 0 1px 3px rgba(0,0,0,0.50), inset 0 0 0 1px rgba(255,255,255,0.04);
+  --grp-btn-bg:     rgba(255,255,255,0.09);
+  --grp-btn-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  /* Message bubbles */
+  --msg-agent-bg:     rgba(168,85,247,0.13);
+  --msg-agent-border: rgba(168,85,247,0.24);
+  --msg-agent-text:   #cec0f0;
+  --msg-visitor-bg:   rgba(255,255,255,0.05);
+  --msg-visitor-border: rgba(255,255,255,0.08);
+  --msg-visitor-text: var(--text);
+  --msg-agent-solid:   #2e1f52;
+  --msg-visitor-solid: #1e1a36;
+  /* Count badge */
+  --badge-bg: rgba(255,255,255,0.05);
+}
+
+/* ── Light mode ───────────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg:          #e8eaf2;
+  --bg1:         #f2f3f8;
+  --bg2:         #e4e6ef;
+  --bg3:         #d8dae6;
+  --border:      rgba(100,80,160,0.14);
+  --border2:     rgba(100,80,160,0.08);
+  --text:        #1a1a2e;
+  --text2:       #4a4868;
+  --text3:       #7c7a9a;
+  --acc:         #7c3aed;
+  --acc2:        #a21caf;
+  --acc-grad:    linear-gradient(135deg, #7c3aed, #c026d3);
+  --acc-tint:    rgba(124,58,237,0.10);
+  --acc-border:  rgba(124,58,237,0.22);
+  --shadow:      0 1px 4px rgba(0,0,0,0.12);
+  --bg-glow:     #e8eaf2;
+  /* Surfaces */
+  --surf-rail:   rgba(255,255,255,0.95);
+  --surf-panel:  rgba(238,240,248,0.65);
+  --surf-thread: rgba(248,249,254,0.35);
+  --surf-header: rgba(255,255,255,0.96);
+  --surf-comp:   rgba(255,255,255,0.96);
+  --surf-input:  rgba(210,212,228,0.70);
+  --blur-sm:     blur(12px);
+  --blur-md:     blur(20px);
+  /* Button group — light */
+  --grp-bg:         rgba(180,182,200,0.35);
+  --grp-border:     rgba(120,110,160,0.20);
+  --grp-shadow:     inset 0 1px 3px rgba(0,0,0,0.10), inset 0 0 0 1px rgba(255,255,255,0.4);
+  --grp-btn-bg:     rgba(255,255,255,0.90);
+  --grp-btn-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  /* Message bubbles */
+  --msg-agent-bg:     rgba(124,58,237,0.12);
+  --msg-agent-border: rgba(124,58,237,0.22);
+  --msg-agent-text:   #ffffff;
+  --msg-visitor-bg:   #ffffff;
+  --msg-visitor-border: rgba(100,80,160,0.14);
+  --msg-visitor-text: #1a1a2e;
+  --msg-agent-solid:   #6d28d9;
+  --msg-visitor-solid: #ffffff;
+  /* Count badge */
+  --badge-bg: rgba(0,0,0,0.06);
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-glow, var(--bg));
+  color: var(--text);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Overline label — tight tracking, ultra small caps */
+.overline {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-feature-settings: 'ss01';
+}
+
+/* Section heading — Inter Black */
+.heading-black {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.glass {
+  background: var(--surf-panel);
+  backdrop-filter: var(--blur-md);
+  border: 1px solid var(--border);
+}
+
+.pulse-dot { position: relative; }
+.pulse-dot::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 9999px; background: currentColor;
+  opacity: 0.5; animation: pulse 1.8s ease-out infinite;
+}
+@keyframes pulse {
+  0%  { transform: scale(0.8); opacity: 0.5; }
+  100%{ transform: scale(2.2); opacity: 0; }
+}
+
+.msg-enter-active { transition: all 0.28s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.msg-enter-from   { opacity: 0; transform: translateY(8px); }
+
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.2); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }

@@ -1,0 +1,11 @@
+**/node_modules
+client/dist
+server/.cert
+server/.env
+**/.env
+.git
+.gitignore
+development
+docs
+*.md
+!README.md

@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LivePerson Agent Workspace — developer sample</title>
+    <style>
+      :root {
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --ink: #0f172a;
+        --sub: #5b6478;
+        --line: #e3e6f0;
+        --panel: #ffffff;
+        --accent: #7c3aed;
+        --accent2: #c026d3;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { min-height: 100vh; color: var(--ink); }
+
+      /* ── Blueprint background (Extend theme, light) ───────────────── */
+      .bp { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #e8eaf2; }
+      .bp__gradient {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse at 20% 80%, rgba(124, 58, 237, 0.07) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 20%, rgba(192, 38, 211, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+          linear-gradient(180deg, #dfe1ee 0%, #e8eaf2 30%, #e8eaf2 70%, #e2e4f0 100%);
+      }
+      .bp__grid { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .bp__grid-small { stroke: rgba(100, 80, 160, 0.035); }
+      .bp__grid-large { stroke: rgba(100, 80, 160, 0.06); }
+      .bp__line--accent { stroke: rgba(124, 58, 237, 0.18); }
+      .bp__line--secondary { stroke: rgba(192, 38, 211, 0.14); }
+      .bp__node--accent { fill: rgba(124, 58, 237, 0.35); }
+      .bp__node--secondary { fill: rgba(192, 38, 211, 0.28); }
+      .bp__label {
+        position: absolute; font-family: 'Fira Code', Monaco, monospace;
+        font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+        color: rgba(100, 80, 160, 0.28); white-space: nowrap;
+      }
+      .bp__label--dim { color: rgba(124, 58, 237, 0.2); font-size: 8px; }
+
+      /* ── Layout ───────────────────────────────────────────────────── */
+      .page { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 44px 32px 72px; }
+
+      header.hero { text-align: center; margin-bottom: 36px; }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--accent); background: rgba(124, 58, 237, 0.1); padding: 5px 12px; border-radius: 999px;
+      }
+      h1 {
+        font-size: 38px; font-weight: 800; letter-spacing: -0.025em; margin: 16px 0 8px;
+        background: linear-gradient(135deg, #4c1d95 20%, #c026d3);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      .lede { font-size: 16px; color: var(--sub); line-height: 1.6; max-width: 640px; margin: 0 auto; }
+
+      /* ── Two-column showcase ──────────────────────────────────────── */
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+      @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+
+      .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+        padding: 22px; box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06); display: flex; flex-direction: column;
+      }
+      .card__tag {
+        font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);
+      }
+      .card__title { font-size: 20px; font-weight: 700; margin: 4px 0 4px; }
+      .card__desc { font-size: 13.5px; color: var(--sub); line-height: 1.55; margin: 0 0 16px; }
+
+      /* Mockup frame */
+      .mock {
+        border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+        background: #16112d; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      }
+      .mock--widget { width: 260px; align-self: center; }
+      .mock--widget .wg { border-radius: 12px; }
+
+      .card__cta {
+        margin-top: 18px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 11px 16px; border-radius: 10px; text-decoration: none;
+        background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff;
+        font-size: 14px; font-weight: 600; box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+        transition: transform 0.12s, box-shadow 0.12s;
+      }
+      .card__cta:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(124, 58, 237, 0.45); }
+      .card__cta--ghost {
+        background: transparent; color: var(--accent); border: 1px solid var(--accent);
+        box-shadow: none;
+      }
+      .card__ctas { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+      .card__ctas .card__cta { margin-top: 0; flex: 1; }
+
+      /* ── Clone / get-started ──────────────────────────────────────── */
+      .start { margin-top: 28px; }
+      .start__bar {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: #0b1020; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;
+      }
+      .start__bar code { color: #c7d2fe; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+      .start__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      @media (max-width: 720px) { .start__steps { grid-template-columns: 1fr; } }
+      .step {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+      }
+      .step b { font-size: 13px; }
+      .step span { display: block; font-size: 12.5px; color: var(--sub); margin-top: 3px; line-height: 1.5; }
+      .step code {
+        display: inline-block; margin-top: 6px; background: #eef0f6; border: 1px solid var(--line);
+        border-radius: 5px; padding: 2px 7px; font-size: 12px; color: #3730a3; font-family: ui-monospace, Menlo, monospace;
+      }
+
+      footer { text-align: center; font-size: 12px; color: var(--sub); margin-top: 36px; }
+
+      /* ── Console mockup (ported from agent-workspace login preview) ── */
+      .login__ws {
+        display: grid;
+        grid-template-columns: 44px 200px 1fr 180px;
+        height: 440px;
+        font-size: 11px;
+        overflow: hidden;
+      }
+      
+      /* Rail */
+      .login__ws-rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding-bottom: 12px;
+        gap: 8px;
+        background: rgba(28, 21, 56, 0.95);
+        border-right: 1px solid rgba(232, 73, 183, 0.08);
+      }
+      .login__ws-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #6b7280;
+      }
+      .login__ws-dot--on {
+        background: #34d399;
+      }
+      .login__ws-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: rgba(147, 51, 234, 0.2);
+        border: 1px solid rgba(147, 51, 234, 0.3);
+        color: #a78bfa;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      /* Conv list */
+      .login__ws-list {
+        background: rgba(28, 21, 56, 0.8);
+        border-right: 1px solid rgba(232, 73, 183, 0.08);
+        overflow: hidden;
+      }
+      .login__ws-listhead {
+        padding: 8px 10px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.3);
+        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .login__ws-listhead span {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 1px 6px;
+        font-size: 9px;
+      }
+      .login__ws-convo {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        padding: 7px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        cursor: default;
+      }
+      .login__ws-convo--active {
+        background: rgba(147, 51, 234, 0.12);
+      }
+      .login__ws-avatar-sm {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .login__ws-convo-body {
+        min-width: 0;
+      }
+      .login__ws-convo-name {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+        font-size: 10px;
+      }
+      .login__ws-convo-preview {
+        color: rgba(255, 255, 255, 0.35);
+        font-size: 9px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 130px;
+      }
+      .login__ws-tag {
+        display: inline-block;
+        margin-top: 3px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 600;
+        background: rgba(147, 51, 234, 0.15);
+        color: #a78bfa;
+        border: 1px solid rgba(147, 51, 234, 0.2);
+      }
+      
+      /* Thread */
+      .login__ws-thread {
+        display: flex;
+        flex-direction: column;
+        background: rgba(17, 14, 36, 0.5);
+        border-right: 1px solid rgba(232, 73, 183, 0.08);
+        overflow: hidden;
+      }
+      .login__ws-thread-head {
+        padding: 8px 12px;
+        font-size: 10px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+        background: rgba(28, 21, 56, 0.6);
+        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
+      }
+      .login__ws-msgs {
+        flex: 1;
+        padding: 10px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow: hidden;
+      }
+      .login__ws-msg {
+        max-width: 80%;
+        padding: 6px 9px;
+        border-radius: 8px;
+        font-size: 9.5px;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .login__ws-msg--visitor {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .login__ws-msg--agent {
+        align-self: flex-end;
+        background: rgba(147, 51, 234, 0.15);
+        border: 1px solid rgba(147, 51, 234, 0.22);
+        color: #c4b8e0;
+      }
+      
+      /* Composer */
+      .login__ws-composer {
+        background: rgba(28, 21, 56, 0.85);
+        border-top: 1px solid rgba(232, 73, 183, 0.08);
+        padding: 6px 8px;
+      }
+      .login__ws-composer-fmt {
+        display: flex;
+        gap: 4px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 10px;
+      }
+      .login__ws-composer-fmt span {
+        padding: 1px 4px;
+      }
+      .login__ws-composer-input {
+        padding: 6px 0;
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 10px;
+      }
+      .login__ws-composer-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+      }
+      .login__ws-pill {
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 8.5px;
+        font-weight: 600;
+        background: rgba(147, 51, 234, 0.15);
+        border: 1px solid rgba(147, 51, 234, 0.25);
+        color: #a78bfa;
+      }
+      .login__ws-send {
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #8b5cf6, #d946ef);
+        color: #fff;
+      }
+      
+      /* Right panel */
+      .login__ws-panel {
+        background: rgba(28, 21, 56, 0.72);
+        overflow: hidden;
+      }
+      .login__ws-panel-tabs {
+        display: flex;
+        gap: 2px;
+        padding: 5px 6px;
+        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
+      }
+      .login__ws-panel-tab {
+        padding: 3px 7px;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.35);
+        cursor: default;
+      }
+      .login__ws-panel-tab--on {
+        background: rgba(147, 51, 234, 0.15);
+        color: #a78bfa;
+        border: 1px solid rgba(147, 51, 234, 0.2);
+      }
+      .login__ws-panel-rows {
+        padding: 8px 8px;
+      }
+      .login__ws-panel-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        font-size: 9px;
+      }
+      .login__ws-panel-row span:first-child {
+        color: rgba(255, 255, 255, 0.3);
+      }
+      .login__ws-panel-row span:last-child {
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 500;
+      }
+      
+      /* scale the 440px console mock to fit the card */
+      .mock .login__ws { height: 300px; font-size: 9px; grid-template-columns: 36px 150px 1fr 130px; }
+
+      /* ── Widget mockup (matches the 400×700 widget chrome) ── */
+      .wg { display: grid; grid-template-columns: 38px 1fr; height: 360px; background: #16112d; }
+      .wg__rail { background: rgba(10,8,18,.94); border-right: 1px solid rgba(232,73,183,.08); display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 7px; }
+      .wg__rail-logo { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg,#f5a623,#e0713c); }
+      .wg__rail-chat { position: relative; width: 24px; height: 24px; border-radius: 7px; background: rgba(255,255,255,.06); }
+      .wg__rail-badge { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; color: #fff; font-size: 7px; font-weight: 700; line-height: 12px; text-align: center; }
+      .wg__rail-conv { width: 22px; height: 22px; border-radius: 50%; opacity: .55; }
+      .wg__rail-conv--on { opacity: 1; box-shadow: 0 0 0 2px rgba(10,8,18,.94), 0 0 0 4px #9333ea; }
+      .wg__rail-av { width: 24px; height: 24px; border-radius: 7px; margin-top: auto; background: url('https://storage.googleapis.com/lp-demo-builder/31487986/jack-torrence.png') center/cover, #6d28d9; }
+      .wg__main { display: flex; flex-direction: column; background: rgba(10,8,18,.22); }
+      .wg__head { display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 8px; background: rgba(10,8,18,.82); border-bottom: 1px solid rgba(232,73,183,.08); }
+      .wg__head-av { width: 18px; height: 18px; border-radius: 50%; background: #d4a017; flex-shrink: 0; }
+      .wg__head-name { font-size: 10px; font-weight: 600; color: #e8e0f0; flex: 1; }
+      .wg__head-actions { display: flex; gap: 4px; }
+      .wg__head-actions i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.3); }
+      .wg__thread { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 8px; overflow: hidden; }
+      .wg__msg { max-width: 78%; padding: 5px 8px; border-radius: 9px; font-size: 8.5px; line-height: 1.35; }
+      .wg__msg--in { align-self: flex-start; background: rgba(255,255,255,.05); color: #cfc6e0; }
+      .wg__msg--out { align-self: flex-end; background: #6d28d9; color: #fff; }
+      .wg__composer { margin: 6px; padding: 5px; border-radius: 9px; background: rgba(8,6,16,.55); border: 1px solid rgba(232,73,183,.1); }
+      .wg__composer-fmt { display: flex; gap: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,.06); color: rgba(255,255,255,.3); font-size: 9px; }
+      .wg__composer-fmt b, .wg__composer-fmt i, .wg__composer-fmt span { font-style: normal; }
+      .wg__composer-input { padding: 5px 0; color: rgba(255,255,255,.25); font-size: 9px; }
+      .wg__composer-row { display: flex; align-items: center; gap: 5px; }
+      .wg__composer-row i { width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,.1); }
+      .wg__send { width: 18px; height: 16px; border-radius: 5px; background: linear-gradient(135deg,#8b5cf6,#d946ef); }
+    </style>
+  </head>
+  <body>
+    <!-- Blueprint background -->
+    <div class="bp" aria-hidden="true">
+      <div class="bp__gradient"></div>
+      <svg class="bp__grid" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="bpSmall" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" class="bp__grid-small" stroke-width="0.5" />
+          </pattern>
+          <pattern id="bpLarge" width="200" height="200" patternUnits="userSpaceOnUse">
+            <rect width="200" height="200" fill="url(#bpSmall)" />
+            <path d="M 200 0 L 0 0 0 200" fill="none" class="bp__grid-large" stroke-width="1" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#bpLarge)" />
+      </svg>
+      <svg class="bp__schematic" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+        <line x1="75%" y1="8%" x2="100%" y2="8%" class="bp__line--accent" stroke-width="1" />
+        <line x1="82%" y1="12%" x2="95%" y2="12%" class="bp__line--accent" stroke-width="1" />
+        <line x1="0" y1="25%" x2="8%" y2="25%" class="bp__line--secondary" stroke-width="1" />
+        <line x1="0" y1="85%" x2="15%" y2="85%" class="bp__line--secondary" stroke-width="1" />
+        <circle cx="82%" cy="12%" r="3" class="bp__node--accent" />
+        <circle cx="8%" cy="25%" r="3" class="bp__node--secondary" />
+      </svg>
+      <div>
+        <span class="bp__label" style="top:5%;right:5%">SYS.EXTEND.v2.4</span>
+        <span class="bp__label" style="top:22%;left:3%">NODE.ACTIVE</span>
+        <span class="bp__label" style="bottom:5%;left:5%">LP.PLATFORM.HUB</span>
+        <span class="bp__label bp__label--dim" style="bottom:35%;left:2%">0xE849</span>
+      </div>
+    </div>
+
+    <div class="page">
+      <header class="hero">
+        <span class="eyebrow">● Developer sample</span>
+        <h1>LivePerson Agent Workspace</h1>
+        <p class="lede">
+          A reference implementation of a brand-side agent console on the official LivePerson
+          Messaging SDK — running entirely server-side to bypass CORS. Ships as a full
+          workspace <strong>and</strong> a compact embeddable widget. Explore both, then clone
+          the repo and make it yours.
+        </p>
+      </header>
+
+      <div class="grid">
+        <!-- Full workspace -->
+        <div class="card">
+          <span class="card__tag">Full console</span>
+          <div class="card__title">Agent Workspace</div>
+          <p class="card__desc">
+            The complete multi-conversation console: live thread, SLA-ordered list, customer
+            context, secure forms, cobrowse &amp; calls, transfer with live agent status.
+          </p>
+          <!-- Console mockup (ported from the agent-workspace login preview) -->
+          <div class="mock">
+            <div class="login__ws">
+              <div class="login__ws-rail">
+                <div class="login__ws-dot login__ws-dot--on"></div>
+                <div class="login__ws-avatar">B</div>
+              </div>
+              <div class="login__ws-list">
+                <div class="login__ws-listhead">My Conversations <span>4</span></div>
+                <div class="login__ws-convo">
+                  <div class="login__ws-avatar-sm" style="background: hsl(280,60%,42%)">V</div>
+                  <div class="login__ws-convo-body">
+                    <div class="login__ws-convo-name">Visitor</div>
+                    <div class="login__ws-convo-preview">Hi, I need help with…</div>
+                    <div class="login__ws-tag">web-sales</div>
+                  </div>
+                </div>
+                <div class="login__ws-convo login__ws-convo--active">
+                  <div class="login__ws-avatar-sm" style="background: hsl(200,60%,42%)">V</div>
+                  <div class="login__ws-convo-body">
+                    <div class="login__ws-convo-name">Visitor</div>
+                    <div class="login__ws-convo-preview">Can you check my order?</div>
+                    <div class="login__ws-tag">web-sales</div>
+                  </div>
+                </div>
+                <div class="login__ws-convo">
+                  <div class="login__ws-avatar-sm" style="background: hsl(140,55%,40%)">V</div>
+                  <div class="login__ws-convo-body">
+                    <div class="login__ws-convo-name">Visitor</div>
+                    <div class="login__ws-convo-preview">Thanks, that worked!</div>
+                    <div class="login__ws-tag">support</div>
+                  </div>
+                </div>
+                <div class="login__ws-convo">
+                  <div class="login__ws-avatar-sm" style="background: hsl(30,70%,45%)">V</div>
+                  <div class="login__ws-convo-body">
+                    <div class="login__ws-convo-name">Visitor</div>
+                    <div class="login__ws-convo-preview">What are your hours?</div>
+                    <div class="login__ws-tag">sales</div>
+                  </div>
+                </div>
+              </div>
+              <div class="login__ws-thread">
+                <div class="login__ws-thread-head">09d898…b656</div>
+                <div class="login__ws-msgs">
+                  <div class="login__ws-msg login__ws-msg--visitor">Hi, I need help finding the right plan</div>
+                  <div class="login__ws-msg login__ws-msg--agent">Hi there! Quick question — do you currently have cover?</div>
+                  <div class="login__ws-msg login__ws-msg--visitor">Not yet, first time looking</div>
+                  <div class="login__ws-msg login__ws-msg--agent">Perfect, let me pull up our starter options.</div>
+                </div>
+                <div class="login__ws-composer">
+                  <div class="login__ws-composer-fmt"><span>B</span><span><em>I</em></span><span>≡</span></div>
+                  <div class="login__ws-composer-input">Type a message…</div>
+                  <div class="login__ws-composer-row">
+                    <span class="login__ws-pill">Rewrite</span>
+                    <span class="login__ws-pill">Translate</span>
+                    <div style="flex: 1"></div>
+                    <div class="login__ws-send">Send</div>
+                  </div>
+                </div>
+              </div>
+              <div class="login__ws-panel">
+                <div class="login__ws-panel-tabs">
+                  <span class="login__ws-panel-tab login__ws-panel-tab--on">Customer</span>
+                  <span class="login__ws-panel-tab">Notes</span>
+                </div>
+                <div class="login__ws-panel-rows">
+                  <div class="login__ws-panel-row"><span>Name</span><span>Visitor</span></div>
+                  <div class="login__ws-panel-row"><span>Device</span><span>Desktop</span></div>
+                  <div class="login__ws-panel-row"><span>Browser</span><span>Chrome</span></div>
+                  <div class="login__ws-panel-row"><span>Skill</span><span>web-sales</span></div>
+                  <div class="login__ws-panel-row"><span>Country</span><span>Australia</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <a class="card__cta" href="/agent-workspace">Open the workspace →</a>
+        </div>
+
+        <!-- Embedded widget -->
+        <div class="card">
+          <span class="card__tag">Embeddable</span>
+          <div class="card__title">Agent Widget</div>
+          <p class="card__desc">
+            The same console compacted to 400×700 — drop it into any CRM with a single
+            <code>&lt;iframe&gt;</code>. Full feature parity in a slim surface.
+          </p>
+          <!-- Widget mockup (matches the actual 400×700 widget chrome) -->
+          <div class="mock mock--widget">
+            <div class="wg">
+              <div class="wg__rail">
+                <div class="wg__rail-logo"></div>
+                <div class="wg__rail-chat">
+                  <span class="wg__rail-badge">1</span>
+                </div>
+                <div class="wg__rail-conv wg__rail-conv--on" style="background: hsl(280,55%,45%)"></div>
+                <div class="wg__rail-conv" style="background: hsl(200,55%,45%)"></div>
+                <div class="wg__rail-conv" style="background: hsl(140,50%,42%)"></div>
+                <div class="wg__rail-conv" style="background: hsl(30,65%,48%)"></div>
+                <div class="wg__rail-av"></div>
+              </div>
+              <div class="wg__main">
+                <div class="wg__head">
+                  <div class="wg__head-av"></div>
+                  <div class="wg__head-name">Visitor</div>
+                  <div class="wg__head-actions"><i></i><i></i><i></i></div>
+                </div>
+                <div class="wg__thread">
+                  <div class="wg__msg wg__msg--in">Is this plan right for me?</div>
+                  <div class="wg__msg wg__msg--out">Let me pull up the options for you.</div>
+                  <div class="wg__msg wg__msg--in">Great, thank you</div>
+                  <div class="wg__msg wg__msg--out">Here are three that fit your needs.</div>
+                </div>
+                <div class="wg__composer">
+                  <div class="wg__composer-fmt"><b>B</b><i>I</i><span>≡</span></div>
+                  <div class="wg__composer-input">Send a message…</div>
+                  <div class="wg__composer-row"><i></i><i></i><i></i><div style="flex:1"></div><span class="wg__send"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <a class="card__cta" href="/demo">Open demo →</a>
+        </div>
+      </div>
+
+      <!-- Clone / get started -->
+      <section class="start">
+        <div class="start__bar">
+          <code>git clone &lt;your-fork&gt;/agent-chat-widget &amp;&amp; cd agent-chat-widget</code>
+        </div>
+        <div class="start__steps">
+          <div class="step">
+            <b>1 · Install</b>
+            <span>Install client + server deps.</span>
+            <code>npm run install:all</code>
+          </div>
+          <div class="step">
+            <b>2 · Run</b>
+            <span>Client on :9400, API on :8787.</span>
+            <code>npm run dev</code>
+          </div>
+          <div class="step">
+            <b>3 · Deploy</b>
+            <span>Single container (server serves both).</span>
+            <code>npm run docker:build</code>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        Built on the official LivePerson Messaging SDK · server-side, no CORS · open sample
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+development/
+.cert/
+server/.cert/
+# build artifacts
+*.tsbuildinfo
+# stray dev captures (raw UMS frames, not docs)
+/cobrowse.md
