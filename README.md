@@ -15,6 +15,21 @@ The browser never contacts LivePerson directly. It talks to the Express server o
 `fetch` + Server-Sent Events; the server holds the `lp-messaging-sdk` brand connection
 and makes every LP call. That separation is the whole point.
 
+## 🚀 Demo
+
+A live instance is deployed on Cloud Run:
+
+**👉 [lp-agent-workspace-j32p5qrqfa-ts.a.run.app](https://lp-agent-workspace-j32p5qrqfa-ts.a.run.app)**
+
+| Surface | Link |
+|---|---|
+| **Landing** (developer portal) | [`/`](https://lp-agent-workspace-j32p5qrqfa-ts.a.run.app/) |
+| **Agent Workspace** (full console) | [`/agent-workspace`](https://lp-agent-workspace-j32p5qrqfa-ts.a.run.app/agent-workspace) |
+| **Agent Widget** (embeddable, 400×700) | [`/widget`](https://lp-agent-workspace-j32p5qrqfa-ts.a.run.app/widget) |
+| **Embed demo** (widget in a stand-in CRM) | [`/demo`](https://lp-agent-workspace-j32p5qrqfa-ts.a.run.app/demo) |
+
+Sign in with a **brand agent** account — SSO or Account ID + agent username/password.
+
 ## Proof points & status
 
 | # | Goal | Mechanism | Status |
