@@ -41,10 +41,12 @@ gcloud run deploy "$SERVICE" \
 URL="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
 echo "▶ Service URL: $URL"
 
+# LP_SSO_REDIRECT_URIS contains commas, which --update-env-vars treats as a value
+# separator — use the ^@@^ custom-delimiter syntax so the comma stays in the value.
 gcloud run services update "$SERVICE" \
   --project "$PROJECT" \
   --region "$REGION" \
-  --update-env-vars "COBROWSE_HTTPS_ORIGIN=$URL,LP_SSO_REDIRECT_URIS=$URL/callback,$URL/widget/callback"
+  --update-env-vars "^@@^COBROWSE_HTTPS_ORIGIN=$URL@@LP_SSO_REDIRECT_URIS=$URL/callback,$URL/widget/callback"
 
 echo ""
 echo "✅ Deployed: $URL"
