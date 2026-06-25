@@ -7,7 +7,7 @@ const emit = defineEmits<{ (e: "signed-in", me: Me): void }>();
 
 const mode = ref<"sso" | "password">("sso");
 const accountId = ref(localStorage.getItem("acw-account") ?? "");
-const username = ref("31487986-brandt");
+const username = ref("");
 const password = ref("");
 const busy = ref(false);
 const error = ref<string | null>(props.initialError ?? null);

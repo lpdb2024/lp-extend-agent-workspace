@@ -6,19 +6,6 @@ defineProps<{ isDark?: boolean }>();
   <div class="bp" :class="{ 'bp--light': !isDark }" aria-hidden="true">
     <div class="bp__gradient" />
 
-    <!-- Grid -->
-    <svg class="bp__grid" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="bpSmall" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" class="bp__grid-small" stroke-width="0.5" />
-        </pattern>
-        <pattern id="bpLarge" width="200" height="200" patternUnits="userSpaceOnUse">
-          <rect width="200" height="200" fill="url(#bpSmall)" />
-          <path d="M 200 0 L 0 0 0 200" fill="none" class="bp__grid-large" stroke-width="1" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#bpLarge)" />
-    </svg>
 
     <!-- Schematic lines + nodes -->
     <svg class="bp__schematic" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
