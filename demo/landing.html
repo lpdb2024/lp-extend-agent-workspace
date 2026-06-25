@@ -4,10 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LivePerson Agent Workspace — developer sample</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        --ink: #0f172a;
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --ink: #0b1020;
         --sub: #5b6478;
         --line: #e3e6f0;
         --panel: #ffffff;
@@ -16,7 +22,11 @@
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; }
-      body { min-height: 100vh; color: var(--ink); }
+      body {
+        min-height: 100vh; color: var(--ink);
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased; letter-spacing: -0.01em;
+      }
 
       /* ── Blueprint background (Extend theme, light) ───────────────── */
       .bp { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #e8eaf2; }
@@ -52,7 +62,7 @@
         color: var(--accent); background: rgba(124, 58, 237, 0.1); padding: 5px 12px; border-radius: 999px;
       }
       h1 {
-        font-size: 38px; font-weight: 800; letter-spacing: -0.025em; margin: 16px 0 8px;
+        font-size: 46px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.04; margin: 14px 0 10px;
         background: linear-gradient(135deg, #4c1d95 20%, #c026d3);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       }
@@ -72,13 +82,15 @@
       .card__title { font-size: 20px; font-weight: 700; margin: 4px 0 4px; }
       .card__desc { font-size: 13.5px; color: var(--sub); line-height: 1.55; margin: 0 0 16px; }
 
-      /* Mockup frame */
+      /* Screenshot frame */
       .mock {
-        border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
-        background: #16112d; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+        border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.14);
+        flex: 1; min-height: 0; display: flex;
       }
-      .mock--widget { width: 260px; align-self: center; }
-      .mock--widget .wg { border-radius: 12px; }
+      .mock__img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+      .mock--widget { align-self: center; max-width: 280px; }
+      .mock--widget .mock__img { object-fit: contain; }
 
       .card__cta {
         margin-top: 18px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -116,287 +128,38 @@
       }
       .start__bar code { color: #c7d2fe; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
 
-      footer { text-align: center; font-size: 12px; color: var(--sub); margin-top: 36px; }
+      /* ── Features ─────────────────────────────────────────────────── */
+      .features { margin-top: 40px; }
+      .features__head { margin-bottom: 22px; }
+      .features__overline {
+        font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--accent);
+      }
+      .features__title { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; margin: 8px 0 6px; }
+      .features__sub { font-size: 15px; color: var(--sub); line-height: 1.6; max-width: 620px; margin: 0; }
+      .features__grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      }
+      @media (max-width: 920px) { .features__grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 560px) { .features__grid { grid-template-columns: 1fr; } }
+      .feat {
+        display: flex; gap: 11px; align-items: flex-start;
+        background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+      }
+      .feat--wide { grid-column: 1 / -1; }
+      .feat__ic {
+        flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px;
+        display: grid; place-items: center; background: rgba(124, 58, 237, 0.1); color: var(--accent);
+      }
+      .feat__ic svg {
+        width: 17px; height: 17px; fill: none; stroke: currentColor;
+        stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      }
+      .feat__t { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+      .feat__d { font-size: 12.5px; color: var(--sub); line-height: 1.5; margin-top: 3px; }
 
-      /* ── Console mockup (ported from agent-workspace login preview) ── */
-      .login__ws {
-        display: grid;
-        grid-template-columns: 44px 200px 1fr 180px;
-        height: 440px;
-        font-size: 11px;
-        overflow: hidden;
-      }
-      
-      /* Rail */
-      .login__ws-rail {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-end;
-        padding-bottom: 12px;
-        gap: 8px;
-        background: rgba(28, 21, 56, 0.95);
-        border-right: 1px solid rgba(232, 73, 183, 0.08);
-      }
-      .login__ws-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #6b7280;
-      }
-      .login__ws-dot--on {
-        background: #34d399;
-      }
-      .login__ws-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        background: rgba(147, 51, 234, 0.2);
-        border: 1px solid rgba(147, 51, 234, 0.3);
-        color: #a78bfa;
-        font-size: 11px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      /* Conv list */
-      .login__ws-list {
-        background: rgba(28, 21, 56, 0.8);
-        border-right: 1px solid rgba(232, 73, 183, 0.08);
-        overflow: hidden;
-      }
-      .login__ws-listhead {
-        padding: 8px 10px;
-        font-size: 9px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: rgba(255, 255, 255, 0.3);
-        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .login__ws-listhead span {
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 8px;
-        padding: 1px 6px;
-        font-size: 9px;
-      }
-      .login__ws-convo {
-        display: flex;
-        align-items: flex-start;
-        gap: 7px;
-        padding: 7px 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        cursor: default;
-      }
-      .login__ws-convo--active {
-        background: rgba(147, 51, 234, 0.12);
-      }
-      .login__ws-avatar-sm {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 10px;
-        font-weight: 700;
-      }
-      .login__ws-convo-body {
-        min-width: 0;
-      }
-      .login__ws-convo-name {
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 600;
-        font-size: 10px;
-      }
-      .login__ws-convo-preview {
-        color: rgba(255, 255, 255, 0.35);
-        font-size: 9px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 130px;
-      }
-      .login__ws-tag {
-        display: inline-block;
-        margin-top: 3px;
-        padding: 1px 6px;
-        border-radius: 4px;
-        font-size: 8px;
-        font-weight: 600;
-        background: rgba(147, 51, 234, 0.15);
-        color: #a78bfa;
-        border: 1px solid rgba(147, 51, 234, 0.2);
-      }
-      
-      /* Thread */
-      .login__ws-thread {
-        display: flex;
-        flex-direction: column;
-        background: rgba(17, 14, 36, 0.5);
-        border-right: 1px solid rgba(232, 73, 183, 0.08);
-        overflow: hidden;
-      }
-      .login__ws-thread-head {
-        padding: 8px 12px;
-        font-size: 10px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(28, 21, 56, 0.6);
-        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
-      }
-      .login__ws-msgs {
-        flex: 1;
-        padding: 10px 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        overflow: hidden;
-      }
-      .login__ws-msg {
-        max-width: 80%;
-        padding: 6px 9px;
-        border-radius: 8px;
-        font-size: 9.5px;
-        line-height: 1.4;
-        color: rgba(255, 255, 255, 0.75);
-      }
-      .login__ws-msg--visitor {
-        align-self: flex-start;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-      }
-      .login__ws-msg--agent {
-        align-self: flex-end;
-        background: rgba(147, 51, 234, 0.15);
-        border: 1px solid rgba(147, 51, 234, 0.22);
-        color: #c4b8e0;
-      }
-      
-      /* Composer */
-      .login__ws-composer {
-        background: rgba(28, 21, 56, 0.85);
-        border-top: 1px solid rgba(232, 73, 183, 0.08);
-        padding: 6px 8px;
-      }
-      .login__ws-composer-fmt {
-        display: flex;
-        gap: 4px;
-        padding-bottom: 5px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.25);
-        font-size: 10px;
-      }
-      .login__ws-composer-fmt span {
-        padding: 1px 4px;
-      }
-      .login__ws-composer-input {
-        padding: 6px 0;
-        color: rgba(255, 255, 255, 0.2);
-        font-size: 10px;
-      }
-      .login__ws-composer-row {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin-top: 4px;
-      }
-      .login__ws-pill {
-        padding: 2px 7px;
-        border-radius: 4px;
-        font-size: 8.5px;
-        font-weight: 600;
-        background: rgba(147, 51, 234, 0.15);
-        border: 1px solid rgba(147, 51, 234, 0.25);
-        color: #a78bfa;
-      }
-      .login__ws-send {
-        padding: 3px 10px;
-        border-radius: 5px;
-        font-size: 9px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #8b5cf6, #d946ef);
-        color: #fff;
-      }
-      
-      /* Right panel */
-      .login__ws-panel {
-        background: rgba(28, 21, 56, 0.72);
-        overflow: hidden;
-      }
-      .login__ws-panel-tabs {
-        display: flex;
-        gap: 2px;
-        padding: 5px 6px;
-        border-bottom: 1px solid rgba(232, 73, 183, 0.07);
-      }
-      .login__ws-panel-tab {
-        padding: 3px 7px;
-        border-radius: 5px;
-        font-size: 9px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.35);
-        cursor: default;
-      }
-      .login__ws-panel-tab--on {
-        background: rgba(147, 51, 234, 0.15);
-        color: #a78bfa;
-        border: 1px solid rgba(147, 51, 234, 0.2);
-      }
-      .login__ws-panel-rows {
-        padding: 8px 8px;
-      }
-      .login__ws-panel-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 4px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 9px;
-      }
-      .login__ws-panel-row span:first-child {
-        color: rgba(255, 255, 255, 0.3);
-      }
-      .login__ws-panel-row span:last-child {
-        color: rgba(255, 255, 255, 0.65);
-        font-weight: 500;
-      }
-      
-      /* scale the 440px console mock to fit the card */
-      .mock .login__ws { height: 300px; font-size: 9px; grid-template-columns: 36px 150px 1fr 130px; }
+      footer { text-align: center; font-size: 12px; color: var(--sub); margin-top: 40px; }
 
-      /* ── Widget mockup (matches the 400×700 widget chrome) ── */
-      .wg { display: grid; grid-template-columns: 38px 1fr; height: 360px; background: #16112d; }
-      .wg__rail { background: rgba(10,8,18,.94); border-right: 1px solid rgba(232,73,183,.08); display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 7px; }
-      .wg__rail-logo { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg,#f5a623,#e0713c); }
-      .wg__rail-chat { position: relative; width: 24px; height: 24px; border-radius: 7px; background: rgba(255,255,255,.06); }
-      .wg__rail-badge { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; color: #fff; font-size: 7px; font-weight: 700; line-height: 12px; text-align: center; }
-      .wg__rail-conv { width: 22px; height: 22px; border-radius: 50%; opacity: .55; }
-      .wg__rail-conv--on { opacity: 1; box-shadow: 0 0 0 2px rgba(10,8,18,.94), 0 0 0 4px #9333ea; }
-      .wg__rail-av { width: 24px; height: 24px; border-radius: 7px; margin-top: auto; background: url('https://storage.googleapis.com/lp-demo-builder/31487986/jack-torrence.png') center/cover, #6d28d9; }
-      .wg__main { display: flex; flex-direction: column; background: rgba(10,8,18,.22); }
-      .wg__head { display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 8px; background: rgba(10,8,18,.82); border-bottom: 1px solid rgba(232,73,183,.08); }
-      .wg__head-av { width: 18px; height: 18px; border-radius: 50%; background: #d4a017; flex-shrink: 0; }
-      .wg__head-name { font-size: 10px; font-weight: 600; color: #e8e0f0; flex: 1; }
-      .wg__head-actions { display: flex; gap: 4px; }
-      .wg__head-actions i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.3); }
-      .wg__thread { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 8px; overflow: hidden; }
-      .wg__msg { max-width: 78%; padding: 5px 8px; border-radius: 9px; font-size: 8.5px; line-height: 1.35; }
-      .wg__msg--in { align-self: flex-start; background: rgba(255,255,255,.05); color: #cfc6e0; }
-      .wg__msg--out { align-self: flex-end; background: #6d28d9; color: #fff; }
-      .wg__composer { margin: 6px; padding: 5px; border-radius: 9px; background: rgba(8,6,16,.55); border: 1px solid rgba(232,73,183,.1); }
-      .wg__composer-fmt { display: flex; gap: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,.06); color: rgba(255,255,255,.3); font-size: 9px; }
-      .wg__composer-fmt b, .wg__composer-fmt i, .wg__composer-fmt span { font-style: normal; }
-      .wg__composer-input { padding: 5px 0; color: rgba(255,255,255,.25); font-size: 9px; }
-      .wg__composer-row { display: flex; align-items: center; gap: 5px; }
-      .wg__composer-row i { width: 12px; height: 12px; border-radius: 3px; background: rgba(255,255,255,.1); }
-      .wg__send { width: 18px; height: 16px; border-radius: 5px; background: linear-gradient(135deg,#8b5cf6,#d946ef); }
     </style>
   </head>
   <body>
@@ -452,81 +215,13 @@
             The complete multi-conversation console: live thread, SLA-ordered list, customer
             context, secure forms, cobrowse &amp; calls, transfer with live agent status.
           </p>
-          <!-- Console mockup (ported from the agent-workspace login preview) -->
+          <!-- Console screenshot -->
           <div class="mock">
-            <div class="login__ws">
-              <div class="login__ws-rail">
-                <div class="login__ws-dot login__ws-dot--on"></div>
-                <div class="login__ws-avatar">B</div>
-              </div>
-              <div class="login__ws-list">
-                <div class="login__ws-listhead">My Conversations <span>4</span></div>
-                <div class="login__ws-convo">
-                  <div class="login__ws-avatar-sm" style="background: hsl(280,60%,42%)">V</div>
-                  <div class="login__ws-convo-body">
-                    <div class="login__ws-convo-name">Visitor</div>
-                    <div class="login__ws-convo-preview">Hi, I need help with…</div>
-                    <div class="login__ws-tag">web-sales</div>
-                  </div>
-                </div>
-                <div class="login__ws-convo login__ws-convo--active">
-                  <div class="login__ws-avatar-sm" style="background: hsl(200,60%,42%)">V</div>
-                  <div class="login__ws-convo-body">
-                    <div class="login__ws-convo-name">Visitor</div>
-                    <div class="login__ws-convo-preview">Can you check my order?</div>
-                    <div class="login__ws-tag">web-sales</div>
-                  </div>
-                </div>
-                <div class="login__ws-convo">
-                  <div class="login__ws-avatar-sm" style="background: hsl(140,55%,40%)">V</div>
-                  <div class="login__ws-convo-body">
-                    <div class="login__ws-convo-name">Visitor</div>
-                    <div class="login__ws-convo-preview">Thanks, that worked!</div>
-                    <div class="login__ws-tag">support</div>
-                  </div>
-                </div>
-                <div class="login__ws-convo">
-                  <div class="login__ws-avatar-sm" style="background: hsl(30,70%,45%)">V</div>
-                  <div class="login__ws-convo-body">
-                    <div class="login__ws-convo-name">Visitor</div>
-                    <div class="login__ws-convo-preview">What are your hours?</div>
-                    <div class="login__ws-tag">sales</div>
-                  </div>
-                </div>
-              </div>
-              <div class="login__ws-thread">
-                <div class="login__ws-thread-head">09d898…b656</div>
-                <div class="login__ws-msgs">
-                  <div class="login__ws-msg login__ws-msg--visitor">Hi, I need help finding the right plan</div>
-                  <div class="login__ws-msg login__ws-msg--agent">Hi there! Quick question — do you currently have cover?</div>
-                  <div class="login__ws-msg login__ws-msg--visitor">Not yet, first time looking</div>
-                  <div class="login__ws-msg login__ws-msg--agent">Perfect, let me pull up our starter options.</div>
-                </div>
-                <div class="login__ws-composer">
-                  <div class="login__ws-composer-fmt"><span>B</span><span><em>I</em></span><span>≡</span></div>
-                  <div class="login__ws-composer-input">Type a message…</div>
-                  <div class="login__ws-composer-row">
-                    <span class="login__ws-pill">Rewrite</span>
-                    <span class="login__ws-pill">Translate</span>
-                    <div style="flex: 1"></div>
-                    <div class="login__ws-send">Send</div>
-                  </div>
-                </div>
-              </div>
-              <div class="login__ws-panel">
-                <div class="login__ws-panel-tabs">
-                  <span class="login__ws-panel-tab login__ws-panel-tab--on">Customer</span>
-                  <span class="login__ws-panel-tab">Notes</span>
-                </div>
-                <div class="login__ws-panel-rows">
-                  <div class="login__ws-panel-row"><span>Name</span><span>Visitor</span></div>
-                  <div class="login__ws-panel-row"><span>Device</span><span>Desktop</span></div>
-                  <div class="login__ws-panel-row"><span>Browser</span><span>Chrome</span></div>
-                  <div class="login__ws-panel-row"><span>Skill</span><span>web-sales</span></div>
-                  <div class="login__ws-panel-row"><span>Country</span><span>Australia</span></div>
-                </div>
-              </div>
-            </div>
+            <img
+              src="https://storage.googleapis.com/extend-platform/content/agent-workspace.png"
+              alt="Agent Workspace console"
+              class="mock__img"
+            />
           </div>
           <a class="card__cta" href="/agent-workspace">Open the workspace →</a>
         </div>
@@ -539,39 +234,13 @@
             The same console compacted to 400×700 — drop it into any CRM with a single
             <code>&lt;iframe&gt;</code>. Full feature parity in a slim surface.
           </p>
-          <!-- Widget mockup (matches the actual 400×700 widget chrome) -->
+          <!-- Widget screenshot -->
           <div class="mock mock--widget">
-            <div class="wg">
-              <div class="wg__rail">
-                <div class="wg__rail-logo"></div>
-                <div class="wg__rail-chat">
-                  <span class="wg__rail-badge">1</span>
-                </div>
-                <div class="wg__rail-conv wg__rail-conv--on" style="background: hsl(280,55%,45%)"></div>
-                <div class="wg__rail-conv" style="background: hsl(200,55%,45%)"></div>
-                <div class="wg__rail-conv" style="background: hsl(140,50%,42%)"></div>
-                <div class="wg__rail-conv" style="background: hsl(30,65%,48%)"></div>
-                <div class="wg__rail-av"></div>
-              </div>
-              <div class="wg__main">
-                <div class="wg__head">
-                  <div class="wg__head-av"></div>
-                  <div class="wg__head-name">Visitor</div>
-                  <div class="wg__head-actions"><i></i><i></i><i></i></div>
-                </div>
-                <div class="wg__thread">
-                  <div class="wg__msg wg__msg--in">Is this plan right for me?</div>
-                  <div class="wg__msg wg__msg--out">Let me pull up the options for you.</div>
-                  <div class="wg__msg wg__msg--in">Great, thank you</div>
-                  <div class="wg__msg wg__msg--out">Here are three that fit your needs.</div>
-                </div>
-                <div class="wg__composer">
-                  <div class="wg__composer-fmt"><b>B</b><i>I</i><span>≡</span></div>
-                  <div class="wg__composer-input">Send a message…</div>
-                  <div class="wg__composer-row"><i></i><i></i><i></i><div style="flex:1"></div><span class="wg__send"></span></div>
-                </div>
-              </div>
-            </div>
+            <img
+              src="https://storage.googleapis.com/extend-platform/content/embedded-widget.png"
+              alt="Embedded agent widget"
+              class="mock__img"
+            />
           </div>
           <a class="card__cta" href="/demo">Open demo →</a>
         </div>
@@ -591,6 +260,56 @@
         </div>
         <div class="start__bar">
           <code>git clone https://github.com/lpdb2024/lp-extend-agent-workspace.git</code>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="features">
+        <div class="features__head">
+          <span class="features__overline">What's inside</span>
+          <h2 class="features__title">Feature-rich, both surfaces</h2>
+          <p class="features__sub">
+            The full console and the embeddable widget share the same engine — built on the
+            official LivePerson Messaging Platform SDK, server-side, with no CORS.
+          </p>
+        </div>
+        <div class="features__grid">
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
+            <div><div class="feat__t">File sharing</div><div class="feat__d">Send images &amp; PDFs to the customer.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+            <div><div class="feat__t">Cobrowse</div><div class="feat__d">Live screen share, proxied server-side.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>
+            <div><div class="feat__t">Video calls</div><div class="feat__d">In-panel WebRTC video.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <div><div class="feat__t">Voice calls</div><div class="feat__d">In-panel WebRTC voice.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <div><div class="feat__t">Secure forms</div><div class="feat__d">PCI forms with detokenized read-back.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <div><div class="feat__t">Customer Info panel</div><div class="feat__d">SDEs, device, journey, page history.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+            <div><div class="feat__t">Conversation event panel</div><div class="feat__d">Live transcript, summaries, notes.</div></div>
+          </div>
+          <div class="feat">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></span>
+            <div><div class="feat__t">Messaging Platform SDK</div><div class="feat__d">Official LP SDK, fully server-side.</div></div>
+          </div>
+          <div class="feat feat--wide">
+            <span class="feat__ic"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05M12 22.08V12"/></svg></span>
+            <div><div class="feat__t">Embeddable agent widget — full parity</div><div class="feat__d">The same feature set as the web console, compacted to a 400×700 iframe you drop into any CRM.</div></div>
+          </div>
         </div>
       </section>
 

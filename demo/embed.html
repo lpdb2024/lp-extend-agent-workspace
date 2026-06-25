@@ -4,12 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agent Chat Widget — embed sample &amp; guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        --ink: #0f172a;
-        --sub: #64748b;
-        --line: #e2e8f0;
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --ink: #0b1020;
+        --sub: #6b7280;
+        --line: #e7e9f0;
         --bg: #e8eaf2;
         --panel: #ffffff;
         --accent: #7c3aed;
@@ -17,7 +23,11 @@
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; }
-      body { min-height: 100vh; color: var(--ink); }
+      body {
+        min-height: 100vh; color: var(--ink);
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased; letter-spacing: -0.01em;
+      }
 
       /* ── Blueprint background — ported from the web app (BlueprintBackground.vue),
             light-mode palette: gradient + grid + schematic lines/nodes + tech labels. */
@@ -55,14 +65,14 @@
         grid-template-columns: 540px 1fr;
         min-height: 100vh;
       }
-      /* Left: widget column */
+      /* Left: widget column — pinned to the bottom (~20px gap). */
       .widget-col {
-        display: flex; align-items: center; justify-content: center;
-        padding: 40px;
+        display: flex; align-items: flex-end; justify-content: center;
+        padding: 0 40px 20px;
       }
       .widget-col iframe {
-        width: 400px; height: 700px; border: 0; border-radius: 20px;
-        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.30), 0 0 0 1px rgba(15, 23, 42, 0.05);
+        width: 400px; height: 700px; border: 0; border-radius: 22px;
+        box-shadow: 0 36px 90px rgba(15, 23, 42, 0.32), 0 0 0 1px rgba(15, 23, 42, 0.05);
         background: #fff;
       }
       /* Right: opaque white content panel */
@@ -72,32 +82,33 @@
         box-shadow: -20px 0 60px rgba(15, 23, 42, 0.06);
         overflow-y: auto;
         max-height: 100vh;
+        display: flex; justify-content: flex-end; /* push content to the right edge */
       }
-      .wrap { padding: 48px 56px 64px; max-width: 720px; }
+      .wrap { padding: 60px 64px 64px; max-width: 560px; }
 
       @media (max-width: 1080px) {
         .layout { grid-template-columns: 1fr; }
-        .widget-col { padding: 28px; }
-        .content { max-height: none; border-left: 0; border-top: 1px solid var(--line); }
+        .widget-col { padding: 28px; align-items: center; }
+        .content { max-height: none; border-left: 0; border-top: 1px solid var(--line); justify-content: flex-start; }
+        .wrap { max-width: 100%; }
       }
 
+      /* Overline-style caption */
       .eyebrow {
-        display: inline-flex; align-items: center; gap: 7px;
-        font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-        color: var(--accent); background: rgba(124, 58, 237, 0.1);
-        padding: 5px 11px; border-radius: 999px;
+        display: inline-block;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--accent);
       }
-      h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 16px 0 6px; }
-      .lede { font-size: 15px; color: var(--sub); line-height: 1.6; margin: 0 0 28px; max-width: 560px; }
+      h1 { font-size: 40px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.05; margin: 14px 0 14px; }
+      .lede { font-size: 16px; font-weight: 400; color: var(--sub); line-height: 1.6; margin: 0 0 36px; }
 
       .card {
-        background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-        padding: 20px 22px; margin-bottom: 18px;
-        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+        padding: 22px 24px; margin-bottom: 16px;
       }
       .card h2 {
-        font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-        color: var(--sub); margin: 0 0 12px;
+        font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em;
+        color: var(--accent); margin: 0 0 16px;
       }
       ol.steps { margin: 0; padding-left: 0; counter-reset: step; list-style: none; }
       ol.steps li {
@@ -126,8 +137,12 @@
       .feat__item { display: flex; gap: 11px; align-items: flex-start; }
       .feat__ic {
         flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
-        display: grid; place-items: center; font-size: 15px;
-        background: rgba(124, 58, 237, 0.1);
+        display: grid; place-items: center;
+        background: rgba(124, 58, 237, 0.1); color: var(--accent);
+      }
+      .feat__ic svg {
+        width: 15px; height: 15px; fill: none; stroke: currentColor;
+        stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
       }
       .feat__t { font-size: 13.5px; font-weight: 600; }
       .feat__d { font-size: 12.5px; color: var(--sub); line-height: 1.45; }
@@ -193,7 +208,7 @@
       <!-- ── Right: opaque white content panel ── -->
       <div class="content">
         <div class="wrap">
-          <span class="eyebrow">● Live sample</span>
+          <span class="eyebrow">Live sample</span>
           <h1>Agent Chat Widget</h1>
           <p class="lede">
             A compact, embeddable LivePerson agent console — drop it into any CRM or internal
@@ -235,27 +250,27 @@
         <h2>Features</h2>
         <div class="feat">
           <div class="feat__item">
-            <div class="feat__ic">💬</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <div><div class="feat__t">Live conversations</div><div class="feat__d">Real-time thread, SLA countdowns, status filters, transcript search.</div></div>
           </div>
           <div class="feat__item">
-            <div class="feat__ic">✍️</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div>
             <div><div class="feat__t">Smart composer</div><div class="feat__d">Send, file share, AI rewrite &amp; translate, canned-response hotkeys.</div></div>
           </div>
           <div class="feat__item">
-            <div class="feat__ic">👤</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
             <div><div class="feat__t">Customer context</div><div class="feat__d">SDEs, customer info, page-view history, agent notes.</div></div>
           </div>
           <div class="feat__item">
-            <div class="feat__ic">🔒</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <div><div class="feat__t">Secure forms</div><div class="feat__d">Send PCI forms and read back the masked submission.</div></div>
           </div>
           <div class="feat__item">
-            <div class="feat__ic">🖥️</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
             <div><div class="feat__t">Cobrowse &amp; calls</div><div class="feat__d">Cobrowse, video and voice — the live screen renders in-panel.</div></div>
           </div>
           <div class="feat__item">
-            <div class="feat__ic">🔀</div>
+            <div class="feat__ic"><svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></div>
             <div><div class="feat__t">Routing actions</div><div class="feat__d">Transfer to skill/agent/manager, back-to-queue, private message, end.</div></div>
           </div>
         </div>
