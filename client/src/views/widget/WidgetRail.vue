@@ -181,15 +181,15 @@ function hoverName(id: string): string {
           </div>
 
           <!-- Skills -->
-          <template v-if="w.agentSkillIds.value.length">
+          <template v-if="w.agentSkills.value.length">
             <div class="rail-menu__sep" />
-            <div class="rail-menu__label">Skills ({{ w.agentSkillIds.value.length }})</div>
+            <div class="rail-menu__label">Skills ({{ w.agentSkills.value.length }})</div>
             <div class="rail-menu__skills">
-              <span v-for="id in w.agentSkillIds.value.slice(0, 8)" :key="id" class="rail-menu__skill">
-                {{ id }}
+              <span v-for="s in w.agentSkills.value.slice(0, 8)" :key="s.id" class="rail-menu__skill">
+                {{ s.name }}
               </span>
-              <span v-if="w.agentSkillIds.value.length > 8" class="rail-menu__skill">
-                +{{ w.agentSkillIds.value.length - 8 }}
+              <span v-if="w.agentSkills.value.length > 8" class="rail-menu__skill">
+                +{{ w.agentSkills.value.length - 8 }}
               </span>
             </div>
           </template>

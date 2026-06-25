@@ -1,50 +1,51 @@
 @import 'tailwindcss';
 
-/* ── Dark mode (default) ──────────────────────────────────────────── */
+/* ── Dark mode (default) — neutral slate, purple only as accent ─────── */
 :root {
   color-scheme: dark;
-  --bg:          #1a1535;
-  --bg1:         #211944;
-  --bg2:         #160f30;
-  --bg3:         #2a2052;
-  --border:      rgba(180,140,255,0.13);
-  --border2:     rgba(180,140,255,0.07);
-  --text:        #ede8f8;
-  --text2:       #9e8ec8;
-  --text3:       #5a4e7a;
-  --acc:         #a855f7;
-  --acc2:        #c026d3;
-  --acc-grad:    linear-gradient(135deg, #8b5cf6, #d946ef);
-  --acc-tint:    rgba(168,85,247,0.15);
-  --acc-border:  rgba(168,85,247,0.32);
+  /* Cool desaturated slate surfaces (not purple-tinted) for readability. */
+  --bg:          #1a1d24;
+  --bg1:         #21252e;
+  --bg2:         #15181e;
+  --bg3:         #2a2f3a;
+  --border:      rgba(255,255,255,0.10);
+  --border2:     rgba(255,255,255,0.06);
+  --text:        #e7eaf0;   /* near-white primary */
+  --text2:       #a3acba;   /* readable grey secondary */
+  --text3:       #6b7280;   /* muted but legible tertiary */
+  --acc:         #a78bfa;   /* lifted purple accent (reads on dark) */
+  --acc2:        #c084fc;
+  --acc-grad:    linear-gradient(135deg, #8b5cf6, #c026d3);
+  --acc-tint:    rgba(139,92,246,0.18);
+  --acc-border:  rgba(139,92,246,0.40);
   --shadow:      0 1px 8px rgba(0,0,0,0.5);
-  --bg-glow:     #130f28;
-  /* Surfaces — deep navy base */
-  --surf-rail:   rgba(18,14,38,0.96);
-  --surf-panel:  rgba(22,17,48,0.72);
-  --surf-thread: rgba(26,21,53,0.30);
-  --surf-header: rgba(20,16,42,0.88);
-  --surf-comp:   rgba(20,16,42,0.92);
-  --surf-input:  rgba(14,10,30,0.60);
+  --bg-glow:     #15181e;
+  /* Surfaces */
+  --surf-rail:   rgba(20,23,29,0.96);
+  --surf-panel:  rgba(28,32,40,0.78);
+  --surf-thread: rgba(26,29,36,0.40);
+  --surf-header: rgba(24,27,34,0.92);
+  --surf-comp:   rgba(24,27,34,0.94);
+  --surf-input:  rgba(15,18,23,0.65);
   --blur-sm:     blur(12px);
   --blur-md:     blur(20px);
-  /* Button group — dark navy trough */
-  --grp-bg:         rgba(12,8,28,0.55);
-  --grp-border:     rgba(0,0,0,0.45);
-  --grp-shadow:     inset 0 1px 3px rgba(0,0,0,0.50), inset 0 0 0 1px rgba(255,255,255,0.04);
-  --grp-btn-bg:     rgba(255,255,255,0.09);
+  /* Button group — neutral trough */
+  --grp-bg:         rgba(0,0,0,0.30);
+  --grp-border:     rgba(0,0,0,0.40);
+  --grp-shadow:     inset 0 1px 3px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.04);
+  --grp-btn-bg:     rgba(255,255,255,0.10);
   --grp-btn-shadow: 0 1px 4px rgba(0,0,0,0.35);
-  /* Message bubbles */
-  --msg-agent-bg:     rgba(168,85,247,0.13);
-  --msg-agent-border: rgba(168,85,247,0.24);
-  --msg-agent-text:   #cec0f0;
-  --msg-visitor-bg:   rgba(255,255,255,0.05);
+  /* Message bubbles — solid purple agent, light-grey visitor (high contrast) */
+  --msg-agent-bg:     #7c5cf0;
+  --msg-agent-border: #7c5cf0;
+  --msg-agent-text:   #ffffff;
+  --msg-visitor-bg:   #2a2f3a;
   --msg-visitor-border: rgba(255,255,255,0.08);
-  --msg-visitor-text: var(--text);
-  --msg-agent-solid:   #2e1f52;
-  --msg-visitor-solid: #1e1a36;
+  --msg-visitor-text: #e7eaf0;
+  --msg-agent-solid:   #7c5cf0;
+  --msg-visitor-solid: #2a2f3a;
   /* Count badge */
-  --badge-bg: rgba(255,255,255,0.05);
+  --badge-bg: rgba(255,255,255,0.07);
 }
 
 /* ── Light mode ───────────────────────────────────────────────────── */

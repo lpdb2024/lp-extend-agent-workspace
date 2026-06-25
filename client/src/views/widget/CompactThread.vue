@@ -118,7 +118,33 @@ const w = props.w;
                   class="th__bubble"
                   :class="m.isFromConsumer ? 'th__bubble--in' : 'th__bubble--out'"
                 >
-                  <div class="th__text" v-html="m.body" />
+                  <div
+                    class="th__text"
+                    v-html="
+                      w.translateActive.value &&
+                      m.isFromConsumer &&
+                      !w.showOriginal[w.translationKey(m.conversationId, m.sequence)] &&
+                      w.translationCache[w.translationKey(m.conversationId, m.sequence)]
+                        ? w.translationCache[w.translationKey(m.conversationId, m.sequence)]
+                        : m.body
+                    "
+                  />
+                  <!-- View Original / Translation toggle -->
+                  <button
+                    v-if="
+                      w.translateActive.value &&
+                      m.isFromConsumer &&
+                      w.translationCache[w.translationKey(m.conversationId, m.sequence)]
+                    "
+                    class="th__xlate-toggle"
+                    @click.stop="
+                      w.showOriginal[w.translationKey(m.conversationId, m.sequence)] =
+                        !w.showOriginal[w.translationKey(m.conversationId, m.sequence)]
+                    "
+                  >
+                    <Icon name="globe" :size="10" />
+                    {{ w.showOriginal[w.translationKey(m.conversationId, m.sequence)] ? 'View translation' : 'View original' }}
+                  </button>
                 </div>
               </div>
               <!-- Time row + 'Privately' tag -->
@@ -223,6 +249,23 @@ const w = props.w;
 .th__text :deep(a) {
   color: inherit;
   text-decoration: underline;
+}
+.th__xlate-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--acc);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.th__xlate-toggle:hover {
+  opacity: 1;
 }
 /* Message wrapper (bubble + meta row beneath) */
 .th__msg {

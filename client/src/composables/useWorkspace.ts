@@ -1682,6 +1682,12 @@ export function useWorkspace(me: Me, emit: WorkspaceEmit) {
   }
 
   const agentSkillIds = computed(() => me.skillIds ?? []);
+  // Resolve the agent's skill ids to names via the account skills list (loaded for
+  // transfer). Falls back to the id string until the list arrives / if not found.
+  const agentSkills = computed(() => {
+    const byId = new Map(skills.value.map((s) => [String(s.id), s.name]));
+    return (me.skillIds ?? []).map((id) => ({ id: String(id), name: byId.get(String(id)) ?? String(id) }));
+  });
 
   function signOut() {
     emit('sign-out');
@@ -1705,6 +1711,7 @@ export function useWorkspace(me: Me, emit: WorkspaceEmit) {
     applyState,
     doReturnToQueue,
     agentSkillIds,
+    agentSkills,
     // identity
     me,
     // core state

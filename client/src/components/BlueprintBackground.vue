@@ -59,11 +59,15 @@ defineProps<{ isDark?: boolean }>();
 /* ── Dark gradient ── */
 .bp__gradient {
   position: absolute; inset: 0;
+  /* Extend brand backdrop image with a slate overlay on top so panels/text stay
+     readable (the overlay gradient sits ABOVE the image in the layer order). */
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(232,73,183,0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(49,204,236,0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(141,70,235,0.06) 0%, transparent 60%),
-    linear-gradient(180deg, #130f28 0%, #1a1535 30%, #1a1535 70%, #17122f 100%);
+    linear-gradient(180deg, rgba(21,24,30,0.62) 0%, rgba(26,29,36,0.68) 40%, rgba(22,25,31,0.74) 100%),
+    url('https://storage.googleapis.com/extend-platform/content/extend-bg-01.png');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
 }
 
 .bp__grid { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -72,30 +76,30 @@ defineProps<{ isDark?: boolean }>();
 
 .bp__schematic { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bp__line { stroke-width: 1; }
-.bp__line--accent    { stroke: rgba(232,73,183,0.25); }
-.bp__line--secondary { stroke: rgba(49,204,236,0.20); }
-.bp__node--accent    { fill: rgba(232,73,183,0.6); }
-.bp__node--secondary { fill: rgba(49,204,236,0.5); }
+.bp__line--accent    { stroke: rgba(139,92,246,0.18); }
+.bp__line--secondary { stroke: rgba(255,255,255,0.07); }
+.bp__node--accent    { fill: rgba(139,92,246,0.45); }
+.bp__node--secondary { fill: rgba(255,255,255,0.22); }
 
 .bp__labels { position: absolute; inset: 0; }
 .bp__label {
   position: absolute;
   font-family: 'Fira Code', 'Monaco', monospace;
   font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: rgba(232,73,183,0.35); white-space: nowrap;
+  color: rgba(167,139,250,0.30); white-space: nowrap;
 }
-.bp__label--dim { color: rgba(49,204,236,0.2); font-size: 8px; }
+.bp__label--dim { color: rgba(255,255,255,0.14); font-size: 8px; }
 
-/* Orbs */
+/* Orbs — subtle purple only (no pink/cyan in the slate theme) */
 .bp__orb {
   position: absolute; width: 200px; height: 200px; border-radius: 50%;
-  filter: blur(80px); opacity: 0.25;
+  filter: blur(90px); opacity: 0.16;
   animation: bp-orb-pulse 8s ease-in-out infinite;
 }
-.bp__orb--sm { width: 120px; height: 120px; filter: blur(60px); opacity: 0.2; }
-.bp__orb--pink   { background: #e849b7; animation-delay: 0s; }
-.bp__orb--cyan   { background: #31ccec; animation-delay: 2s; }
-.bp__orb--purple { background: #8d46eb; animation-delay: 4s; }
+.bp__orb--sm { width: 120px; height: 120px; filter: blur(60px); opacity: 0.12; }
+.bp__orb--pink   { background: #8b5cf6; animation-delay: 0s; }
+.bp__orb--cyan   { background: #6d28d9; animation-delay: 2s; }
+.bp__orb--purple { background: #8b5cf6; animation-delay: 4s; }
 
 @keyframes bp-orb-pulse {
   0%, 100% { transform: scale(1);   opacity: 0.25; }

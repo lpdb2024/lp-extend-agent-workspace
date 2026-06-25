@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import Icon from '../../components/Icon.vue';
 import type { WorkspaceStore } from '../../composables/workspace-store';
 
@@ -18,6 +18,14 @@ function act(fn: () => void) {
   menuOpen.value = false;
   fn();
 }
+
+// Click anywhere outside the menu closes it. The toggle button + the menu itself
+// use @click.stop, so this only fires for outside clicks.
+function closeMenu() {
+  menuOpen.value = false;
+}
+onMounted(() => window.addEventListener('click', closeMenu));
+onBeforeUnmount(() => window.removeEventListener('click', closeMenu));
 </script>
 
 <template>
