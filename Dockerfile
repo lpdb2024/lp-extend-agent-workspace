@@ -28,6 +28,8 @@ ENV COBROWSE_HTTPS_PORT=9443
 COPY server/package*.json ./server/
 RUN npm --prefix server ci --include=dev
 COPY server ./server
+# Static pages the server serves: landing (/) and the widget embed sample (/demo).
+COPY demo ./demo
 # Built client from stage 1 (the server serves ../client/dist relative to itself)
 COPY --from=build /app/client/dist ./client/dist
 
